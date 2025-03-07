@@ -52,6 +52,46 @@ Request Barang is a Laravel-based web application for managing item requests wit
    DB_PASSWORD=your_password
    ```
 
+## Vue.js 2 Setup and Development
+
+1. The project uses Vue.js 2 for the admin interface. The required dependencies are already included in `package.json`:
+   - vue@2.7.16
+   - vuetify@2.7.2
+   - vue-router@3.6.5
+   - vuex@3.6.2
+
+2. Development server:
+   ```bash
+   # Start Laravel development server
+   php artisan serve
+
+   # In a new terminal, compile and hot-reload frontend assets
+   npm run watch
+   ```
+
+3. Building for production:
+   ```bash
+   # Compile and minify frontend assets
+   npm run production
+   ```
+
+### Troubleshooting Vue.js Setup
+
+1. If you encounter Node.js version conflicts:
+   - Use Node.js version 14.x or later
+   - Clear NPM cache: `npm cache clean --force`
+   - Delete node_modules and reinstall: `rm -rf node_modules && npm install`
+
+2. If hot reload is not working:
+   - Check if Laravel Mix is configured correctly in webpack.mix.js
+   - Ensure the correct webpack entry points are set
+   - Clear browser cache and hard reload
+
+3. For production build issues:
+   - Ensure all dependencies are properly installed
+   - Check for any JavaScript errors in the console
+   - Verify the correct Mix configuration for production
+
 7. Run database migrations:
    ```bash
    php artisan migrate
