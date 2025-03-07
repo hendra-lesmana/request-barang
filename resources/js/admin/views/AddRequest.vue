@@ -115,13 +115,16 @@
                   <tr v-for="(item, index) in request.items" :key="index">
                     <td>{{ index + 1 }}</td>
                     <td>
-                      <v-select
+                      <v-autocomplete
                         v-model="item.barang"
                         :items="availableItems"
                         item-text="nama_barang"
                         item-value="id"
                         @change="updateItemDetails(index)"
-                      ></v-select>
+                        hide-no-data
+                        hide-selected
+                        clearable
+                      ></v-autocomplete>
                     </td>
                     <td>{{ item.lokasi }}</td>
                     <td>{{ item.tersedia }}</td>

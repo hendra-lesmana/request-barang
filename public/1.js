@@ -647,11 +647,14 @@ var render = function render() {
         return [_c("thead", [_c("tr", [_c("th", [_vm._v("#")]), _vm._v(" "), _c("th", [_vm._v("Barang")]), _vm._v(" "), _c("th", [_vm._v("Lokasi")]), _vm._v(" "), _c("th", [_vm._v("Tersedia")]), _vm._v(" "), _c("th", [_vm._v("Kuantiti")]), _vm._v(" "), _c("th", [_vm._v("Satuan")]), _vm._v(" "), _c("th", [_vm._v("Keterangan")]), _vm._v(" "), _c("th", [_vm._v("Status")]), _vm._v(" "), _c("th", [_vm._v("Actions")])])]), _vm._v(" "), _c("tbody", _vm._l(_vm.request.items, function (item, index) {
           return _c("tr", {
             key: index
-          }, [_c("td", [_vm._v(_vm._s(index + 1))]), _vm._v(" "), _c("td", [_c("v-select", {
+          }, [_c("td", [_vm._v(_vm._s(index + 1))]), _vm._v(" "), _c("td", [_c("v-autocomplete", {
             attrs: {
               items: _vm.availableItems,
               "item-text": "nama_barang",
-              "item-value": "id"
+              "item-value": "id",
+              "hide-no-data": "",
+              "hide-selected": "",
+              clearable: ""
             },
             on: {
               change: function change($event) {
