@@ -208,11 +208,10 @@ export default {
       return `${this.request.tanggal} ${this.selectedHour}:${this.selectedMinute}`
     }
   },
-
   created() {
     this.fetchEmployees()
+    this.fetchAvailableItems()
   },
-
   methods: {
     updateDateTime() {
       // Method to handle time updates
@@ -242,27 +241,24 @@ export default {
         this.request.nik = ''
       }
     },
-
-    async fetchAvailableItems() {
-      try {
-        const response = await axios.get('/api/items')
-        this.availableItems = response.data
-      } catch (error) {
-        console.error('Error fetching items:', error)
-      }
-    },
-
-    async updateItemDetails(index) {
-      const item = this.request.items[index]
-      const selectedItem = this.availableItems.find(i => i.id === item.barang)
-      if (selectedItem) {
-        item.lokasi = selectedItem.lokasi.nama_lokasi
-        item.tersedia = selectedItem.jumlah_stok
-        item.satuan = selectedItem.satuan
-        item.status = selectedItem.jumlah_stok > 0 ? 'Tersedia' : 'Tidak Tersedia'
-      }
-    },
-
+  async fetchAvailableItems() {
+    try {
+      const response = await axios.get('/api/items')
+      this.availableItems = response.data
+    } catch (error) {
+      console.error('Error fetching items:', error)
+    }
+  },
+  async updateItemDetails(index) {
+    const item = this.request.items[index]
+    const selectedItem = this.availableItems.find(i => i.id === item.barang)
+    if (selectedItem) {
+      item.lokasi = selectedItem.lokasi.nama_lokasi
+      item.tersedia = selectedItem.jumlah_stok
+      item.satuan = selectedItem.satuan
+      item.status = selectedItem.jumlah_stok > 0 ? 'Tersedia' : 'Tidak Tersedia'
+    }
+  },
     addItem() {
       this.request.items.push({
         barang: null,

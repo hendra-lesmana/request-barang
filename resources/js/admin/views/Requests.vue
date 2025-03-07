@@ -79,10 +79,10 @@
                 </v-chip>
               </v-col>
               <v-col cols="12" md="6">
-                <strong>Employee:</strong> {{ selectedRequest.employee_name }}
+                <strong>Employee:</strong> {{ selectedRequest.nama }}
               </v-col>
               <v-col cols="12" md="6">
-                <strong>Department:</strong> {{ selectedRequest.department_name }}
+                <strong>Department:</strong> {{ selectedRequest.departemen }}
               </v-col>
               <v-col cols="12">
                 <strong>Requested Items:</strong>
@@ -91,15 +91,29 @@
                     <thead>
                       <tr>
                         <th>Item</th>
-                        <th>Quantity</th>
                         <th>Location</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Notes</th>
+                        <th>Status</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr v-for="item in selectedRequest.items" :key="item.id">
                         <td>{{ item.nama_barang }}</td>
-                        <td>{{ item.quantity }}</td>
                         <td>{{ item.location }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.satuan }}</td>
+                        <td>{{ item.keterangan || '-' }}</td>
+                        <td>
+                          <v-chip
+                            :color="item.status === 'Terpenuhi' ? 'success' : 'error'"
+                            dark
+                            small
+                          >
+                            {{ item.status }}
+                          </v-chip>
+                        </td>
                       </tr>
                     </tbody>
                   </template>
@@ -191,6 +205,7 @@
 
 <script>
 import AddRequest from './AddRequest.vue'
+import axios from 'axios'
 
 export default {
   name: 'Requests',
@@ -205,17 +220,19 @@ export default {
     addDialog: false,
     headers: [
       { text: 'Request ID', value: 'id' },
-      { text: 'Employee', value: 'employee_name' },
-      { text: 'Department', value: 'department_name' },
-      { text: 'Date', value: 'created_at' },
+      { text: 'NIK', value: 'nik' },
+      { text: 'Employee', value: 'nama' },
+      { text: 'Department', value: 'departemen' },
+      { text: 'Date', value: 'tanggal', format: value => new Date(value).toLocaleDateString('en-US', { day: '2-digit', month: 'long', year: 'numeric' }) + ' - ' + new Date(value).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) },
       { text: 'Status', value: 'status' },
       { text: 'Actions', value: 'actions', sortable: false }
     ],
     requests: [],
     selectedRequest: {
       id: null,
-      employee_name: '',
-      department_name: '',
+      nik: '',
+      nama: '',
+      departemen: '',
       status: '',
       items: [],
       notes: ''
@@ -239,25 +256,25 @@ export default {
     async initialize () {
       this.loading = true
       try {
-        // TODO: Replace with actual API calls
-        this.requests = [
-          {
-            id: 1,
-            employee_name: 'John Doe',
-            department_name: 'IT',
-            created_at: '2024-01-10',
-            status: 'Pending',
-            items: [
-              {
-                id: 1,
-                nama_barang: 'Laptop',
-                quantity: 1,
-                location: 'Office 1'
-              }
-            ],
-            notes: 'Urgent request for new employee'
-          }
-        ]
+        const response = await axios.get('/api/requests')
+        this.requests = response.data.map(request => ({
+          id: request.id,
+          nik: request.nik,
+          nama: request.nama,
+          departemen: request.departemen,
+          tanggal: request.tanggal,
+          status: request.status || 'Pending',
+          items: request.items.map(item => ({
+            id: item.id || Math.random(),
+            nama_barang: item.barang,
+            quantity: item.kuantiti,
+            location: item.lokasi,
+            satuan: item.satuan,
+            keterangan: item.keterangan,
+            status: item.status
+          })),
+          notes: ''
+        }))
       } catch (error) {
         console.error('Error fetching requests:', error)
       } finally {
