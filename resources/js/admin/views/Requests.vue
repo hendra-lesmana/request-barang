@@ -11,6 +11,14 @@
           single-line
           hide-details
         ></v-text-field>
+        <v-btn
+          color="primary"
+          dark
+          class="ml-4"
+          @click="addDialog = true"
+        >
+          Add Request
+        </v-btn>
       </v-card-title>
 
       <v-data-table
@@ -166,17 +174,35 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- Add Request Dialog -->
+    <v-dialog v-model="addDialog" max-width="1000px">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">Add New Request</span>
+        </v-card-title>
+        <v-card-text>
+          <add-request @submit="handleAddRequest" @cancel="addDialog = false" />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
+import AddRequest from './AddRequest.vue'
+
 export default {
   name: 'Requests',
+  components: {
+    AddRequest
+  },
   data: () => ({
     search: '',
     loading: false,
     detailsDialog: false,
     statusDialog: false,
+    addDialog: false,
     headers: [
       { text: 'Request ID', value: 'id' },
       { text: 'Employee', value: 'employee_name' },
@@ -293,6 +319,17 @@ export default {
         this.closeStatusDialog()
       } catch (error) {
         console.error('Error updating status:', error)
+      }
+    },
+
+    async handleAddRequest(requestData) {
+      try {
+        // TODO: Implement API call to create request
+        console.log('New request data:', requestData)
+        this.addDialog = false
+        await this.initialize()
+      } catch (error) {
+        console.error('Error creating request:', error)
       }
     }
   }

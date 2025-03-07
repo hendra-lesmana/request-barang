@@ -1,8 +1,8 @@
 (window["webpackJsonp"] = window["webpackJsonp"] || []).push([[4],{
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/admin/views/Locations.vue?vue&type=script&lang=js":
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/admin/views/Employees.vue?vue&type=script&lang=js":
 /*!********************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/admin/views/Locations.vue?vue&type=script&lang=js ***!
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/admin/views/Employees.vue?vue&type=script&lang=js ***!
   \********************************************************************************************************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -19,7 +19,7 @@ function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyri
 function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
 function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 /* harmony default export */ __webpack_exports__["default"] = ({
-  name: 'Locations',
+  name: 'Employees',
   data: function data() {
     return {
       search: '',
@@ -27,11 +27,14 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       dialogDelete: false,
       loading: false,
       headers: [{
-        text: 'ID',
-        value: 'id'
+        text: 'NIK',
+        value: 'NIK'
       }, {
-        text: 'Location Name',
-        value: 'nama_lokasi'
+        text: 'Name',
+        value: 'nama_karyawan'
+      }, {
+        text: 'Department',
+        value: 'department.nama_departemen'
       }, {
         text: 'Created At',
         value: 'created_at'
@@ -43,22 +46,26 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
         value: 'actions',
         sortable: false
       }],
-      locations: [],
+      employees: [],
+      departments: [],
       editedIndex: -1,
       editedItem: {
         id: null,
-        nama_lokasi: ''
+        NIK: '',
+        nama_karyawan: '',
+        id_departemen: null
       },
       defaultItem: {
         id: null,
-        nama_lokasi: ''
-      },
-      nameErrors: []
+        NIK: '',
+        nama_karyawan: '',
+        id_departemen: null
+      }
     };
   },
   computed: {
     formTitle: function formTitle() {
-      return this.editedIndex === -1 ? 'New Location' : 'Edit Location';
+      return this.editedIndex === -1 ? 'New Employee' : 'Edit Employee';
     }
   },
   watch: {
@@ -81,20 +88,40 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
             case 0:
               _this.loading = true;
               try {
-                // TODO: Replace with actual API call
-                _this.locations = [{
+                // TODO: Replace with actual API calls
+                _this.departments = [{
                   id: 1,
-                  nama_lokasi: 'IT Storage',
+                  nama_departemen: 'Information Technology'
+                }, {
+                  id: 2,
+                  nama_departemen: 'Human Resources'
+                }, {
+                  id: 3,
+                  nama_departemen: 'Finance'
+                }];
+                _this.employees = [{
+                  id: 1,
+                  NIK: 'EMP001',
+                  nama_karyawan: 'John Doe',
+                  department: {
+                    id: 1,
+                    nama_departemen: 'Information Technology'
+                  },
                   created_at: '2024-01-09 10:00:00',
                   updated_at: '2024-01-09 10:00:00'
                 }, {
                   id: 2,
-                  nama_lokasi: 'Office Supply Room',
+                  NIK: 'EMP002',
+                  nama_karyawan: 'Jane Smith',
+                  department: {
+                    id: 2,
+                    nama_departemen: 'Human Resources'
+                  },
                   created_at: '2024-01-09 10:00:00',
                   updated_at: '2024-01-09 10:00:00'
                 }];
               } catch (error) {
-                console.error('Error fetching locations:', error);
+                console.error('Error fetching data:', error);
               } finally {
                 _this.loading = false;
               }
@@ -106,12 +133,13 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       }))();
     },
     editItem: function editItem(item) {
-      this.editedIndex = this.locations.indexOf(item);
+      this.editedIndex = this.employees.indexOf(item);
       this.editedItem = Object.assign({}, item);
+      this.editedItem.id_departemen = item.department.id;
       this.dialog = true;
     },
     deleteItem: function deleteItem(item) {
-      this.editedIndex = this.locations.indexOf(item);
+      this.editedIndex = this.employees.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
@@ -122,10 +150,10 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
           while (1) switch (_context2.prev = _context2.next) {
             case 0:
               try {
-                // TODO: Implement API call to delete location
-                _this2.locations.splice(_this2.editedIndex, 1);
+                // TODO: Implement API call to delete employee
+                _this2.employees.splice(_this2.editedIndex, 1);
               } catch (error) {
-                console.error('Error deleting location:', error);
+                console.error('Error deleting employee:', error);
               } finally {
                 _this2.closeDelete();
               }
@@ -142,7 +170,6 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       this.$nextTick(function () {
         _this3.editedItem = Object.assign({}, _this3.defaultItem);
         _this3.editedIndex = -1;
-        _this3.nameErrors = [];
       });
     },
     closeDelete: function closeDelete() {
@@ -156,32 +183,38 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     save: function save() {
       var _this5 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+        var department;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
-              if (_this5.editedItem.nama_lokasi) {
-                _context3.next = 3;
+              if (!(!_this5.editedItem.NIK || !_this5.editedItem.nama_karyawan || !_this5.editedItem.id_departemen)) {
+                _context3.next = 2;
                 break;
               }
-              _this5.nameErrors = ['Location name is required'];
               return _context3.abrupt("return");
-            case 3:
+            case 2:
               try {
-                // TODO: Implement API call to save location
+                // TODO: Implement API call to save employee
+                department = _this5.departments.find(function (d) {
+                  return d.id === _this5.editedItem.id_departemen;
+                });
                 if (_this5.editedIndex > -1) {
-                  Object.assign(_this5.locations[_this5.editedIndex], _this5.editedItem);
+                  Object.assign(_this5.employees[_this5.editedIndex], _objectSpread(_objectSpread({}, _this5.editedItem), {}, {
+                    department: department
+                  }));
                 } else {
-                  _this5.locations.push(_objectSpread(_objectSpread({}, _this5.editedItem), {}, {
-                    id: _this5.locations.length + 1,
+                  _this5.employees.push(_objectSpread(_objectSpread({}, _this5.editedItem), {}, {
+                    id: _this5.employees.length + 1,
+                    department: department,
                     created_at: new Date().toISOString(),
                     updated_at: new Date().toISOString()
                   }));
                 }
                 _this5.close();
               } catch (error) {
-                console.error('Error saving location:', error);
+                console.error('Error saving employee:', error);
               }
-            case 4:
+            case 3:
             case "end":
               return _context3.stop();
           }
@@ -193,9 +226,9 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
 
 /***/ }),
 
-/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/admin/views/Locations.vue?vue&type=template&id=2d987fe2":
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/admin/views/Employees.vue?vue&type=template&id=493a2694":
 /*!******************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/admin/views/Locations.vue?vue&type=template&id=2d987fe2 ***!
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/admin/views/Employees.vue?vue&type=template&id=493a2694 ***!
   \******************************************************************************************************************************************************************************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -207,7 +240,7 @@ __webpack_require__.r(__webpack_exports__);
 var render = function render() {
   var _vm = this,
     _c = _vm._self._c;
-  return _c("div", [_c("v-card", [_c("v-card-title", [_vm._v("\n      Locations\n      "), _c("v-spacer"), _vm._v(" "), _c("v-text-field", {
+  return _c("div", [_c("v-card", [_c("v-card-title", [_vm._v("\n      Employees\n      "), _c("v-spacer"), _vm._v(" "), _c("v-text-field", {
     attrs: {
       "append-icon": "mdi-magnify",
       label: "Search",
@@ -232,11 +265,11 @@ var render = function render() {
         _vm.dialog = true;
       }
     }
-  }, [_vm._v("\n        Add Location\n      ")])], 1), _vm._v(" "), _c("v-data-table", {
+  }, [_vm._v("\n        Add Employee\n      ")])], 1), _vm._v(" "), _c("v-data-table", {
     staticClass: "elevation-1",
     attrs: {
       headers: _vm.headers,
-      items: _vm.locations,
+      items: _vm.employees,
       search: _vm.search,
       loading: _vm.loading
     },
@@ -285,16 +318,50 @@ var render = function render() {
     }
   }, [_c("v-text-field", {
     attrs: {
-      label: "Location Name",
-      "error-messages": _vm.nameErrors,
+      label: "NIK",
       required: ""
     },
     model: {
-      value: _vm.editedItem.nama_lokasi,
+      value: _vm.editedItem.NIK,
       callback: function callback($$v) {
-        _vm.$set(_vm.editedItem, "nama_lokasi", $$v);
+        _vm.$set(_vm.editedItem, "NIK", $$v);
       },
-      expression: "editedItem.nama_lokasi"
+      expression: "editedItem.NIK"
+    }
+  })], 1), _vm._v(" "), _c("v-col", {
+    attrs: {
+      cols: "12"
+    }
+  }, [_c("v-text-field", {
+    attrs: {
+      label: "Employee Name",
+      required: ""
+    },
+    model: {
+      value: _vm.editedItem.nama_karyawan,
+      callback: function callback($$v) {
+        _vm.$set(_vm.editedItem, "nama_karyawan", $$v);
+      },
+      expression: "editedItem.nama_karyawan"
+    }
+  })], 1), _vm._v(" "), _c("v-col", {
+    attrs: {
+      cols: "12"
+    }
+  }, [_c("v-select", {
+    attrs: {
+      items: _vm.departments,
+      "item-text": "nama_departemen",
+      "item-value": "id",
+      label: "Department",
+      required: ""
+    },
+    model: {
+      value: _vm.editedItem.id_departemen,
+      callback: function callback($$v) {
+        _vm.$set(_vm.editedItem, "id_departemen", $$v);
+      },
+      expression: "editedItem.id_departemen"
     }
   })], 1)], 1)], 1)], 1), _vm._v(" "), _c("v-card-actions", [_c("v-spacer"), _vm._v(" "), _c("v-btn", {
     attrs: {
@@ -325,7 +392,7 @@ var render = function render() {
     }
   }, [_c("v-card", [_c("v-card-title", {
     staticClass: "text-h5"
-  }, [_vm._v("Are you sure you want to delete this location?")]), _vm._v(" "), _c("v-card-actions", [_c("v-spacer"), _vm._v(" "), _c("v-btn", {
+  }, [_vm._v("Are you sure you want to delete this employee?")]), _vm._v(" "), _c("v-card-actions", [_c("v-spacer"), _vm._v(" "), _c("v-btn", {
     attrs: {
       color: "blue darken-1",
       text: ""
@@ -349,17 +416,17 @@ render._withStripped = true;
 
 /***/ }),
 
-/***/ "./resources/js/admin/views/Locations.vue":
+/***/ "./resources/js/admin/views/Employees.vue":
 /*!************************************************!*\
-  !*** ./resources/js/admin/views/Locations.vue ***!
+  !*** ./resources/js/admin/views/Employees.vue ***!
   \************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _Locations_vue_vue_type_template_id_2d987fe2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Locations.vue?vue&type=template&id=2d987fe2 */ "./resources/js/admin/views/Locations.vue?vue&type=template&id=2d987fe2");
-/* harmony import */ var _Locations_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Locations.vue?vue&type=script&lang=js */ "./resources/js/admin/views/Locations.vue?vue&type=script&lang=js");
+/* harmony import */ var _Employees_vue_vue_type_template_id_493a2694__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Employees.vue?vue&type=template&id=493a2694 */ "./resources/js/admin/views/Employees.vue?vue&type=template&id=493a2694");
+/* harmony import */ var _Employees_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Employees.vue?vue&type=script&lang=js */ "./resources/js/admin/views/Employees.vue?vue&type=script&lang=js");
 /* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -369,9 +436,9 @@ __webpack_require__.r(__webpack_exports__);
 /* normalize component */
 
 var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _Locations_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"],
-  _Locations_vue_vue_type_template_id_2d987fe2__WEBPACK_IMPORTED_MODULE_0__["render"],
-  _Locations_vue_vue_type_template_id_2d987fe2__WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  _Employees_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_1__["default"],
+  _Employees_vue_vue_type_template_id_493a2694__WEBPACK_IMPORTED_MODULE_0__["render"],
+  _Employees_vue_vue_type_template_id_493a2694__WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
   false,
   null,
   null,
@@ -381,38 +448,38 @@ var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_
 
 /* hot reload */
 if (false) { var api; }
-component.options.__file = "resources/js/admin/views/Locations.vue"
+component.options.__file = "resources/js/admin/views/Employees.vue"
 /* harmony default export */ __webpack_exports__["default"] = (component.exports);
 
 /***/ }),
 
-/***/ "./resources/js/admin/views/Locations.vue?vue&type=script&lang=js":
+/***/ "./resources/js/admin/views/Employees.vue?vue&type=script&lang=js":
 /*!************************************************************************!*\
-  !*** ./resources/js/admin/views/Locations.vue?vue&type=script&lang=js ***!
+  !*** ./resources/js/admin/views/Employees.vue?vue&type=script&lang=js ***!
   \************************************************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Locations_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./Locations.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/admin/views/Locations.vue?vue&type=script&lang=js");
-/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Locations_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"]); 
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Employees_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib??vue-loader-options!./Employees.vue?vue&type=script&lang=js */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/admin/views/Employees.vue?vue&type=script&lang=js");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Employees_vue_vue_type_script_lang_js__WEBPACK_IMPORTED_MODULE_0__["default"]); 
 
 /***/ }),
 
-/***/ "./resources/js/admin/views/Locations.vue?vue&type=template&id=2d987fe2":
+/***/ "./resources/js/admin/views/Employees.vue?vue&type=template&id=493a2694":
 /*!******************************************************************************!*\
-  !*** ./resources/js/admin/views/Locations.vue?vue&type=template&id=2d987fe2 ***!
+  !*** ./resources/js/admin/views/Employees.vue?vue&type=template&id=493a2694 ***!
   \******************************************************************************/
 /*! exports provided: render, staticRenderFns */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_Locations_vue_vue_type_template_id_2d987fe2__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!../../../../node_modules/vue-loader/lib??vue-loader-options!./Locations.vue?vue&type=template&id=2d987fe2 */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/admin/views/Locations.vue?vue&type=template&id=2d987fe2");
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_Locations_vue_vue_type_template_id_2d987fe2__WEBPACK_IMPORTED_MODULE_0__["render"]; });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_Employees_vue_vue_type_template_id_493a2694__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../../node_modules/babel-loader/lib??ref--4-0!../../../../node_modules/vue-loader/lib/loaders/templateLoader.js??ref--6!../../../../node_modules/vue-loader/lib??vue-loader-options!./Employees.vue?vue&type=template&id=493a2694 */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/admin/views/Employees.vue?vue&type=template&id=493a2694");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_Employees_vue_vue_type_template_id_493a2694__WEBPACK_IMPORTED_MODULE_0__["render"]; });
 
-/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_Locations_vue_vue_type_template_id_2d987fe2__WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_loaders_templateLoader_js_ref_6_node_modules_vue_loader_lib_index_js_vue_loader_options_Employees_vue_vue_type_template_id_493a2694__WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
 
