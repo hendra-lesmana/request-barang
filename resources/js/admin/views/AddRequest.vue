@@ -5,13 +5,22 @@
         <v-row>
           <!-- Employee Information -->
           <v-col cols="12" md="4">
-            <v-text-field
+            <v-autocomplete
               v-model="request.nik"
+              :items="employees"
+              item-text="NIK"
+              item-value="NIK"
               label="NIK Peminta"
               required
               :rules="[v => !!v || 'NIK is required']"
-              @input="fetchEmployeeData"
-            ></v-text-field>
+              @change="handleNikSelection"
+              :loading="loading"
+              :search-input.sync="search"
+              hide-no-data
+              hide-selected
+              return-object
+              clearable
+            ></v-autocomplete>
           </v-col>
           <v-col cols="12" md="4">
             <v-text-field
@@ -181,6 +190,9 @@ export default {
     selectedMinute: new Date().getMinutes().toString().padStart(2, '0'),
     hours: Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0')),
     minutes: Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0')),
+    loading: false,
+    search: null,
+    employees: [],
     request: {
       nik: '',
       nama: '',
@@ -197,19 +209,37 @@ export default {
     }
   },
 
+  created() {
+    this.fetchEmployees()
+  },
+
   methods: {
     updateDateTime() {
       // Method to handle time updates
       console.log('DateTime updated:', this.formattedDateTime)
     },
 
-    async fetchEmployeeData() {
+    async fetchEmployees() {
+      this.loading = true
       try {
-        const response = await axios.get(`/api/employees/${this.request.nik}`)
-        this.request.nama = response.data.nama_karyawan
-        this.request.departemen = response.data.departemen.nama_departemen
+        const response = await axios.get('/api/employees')
+        this.employees = response.data
       } catch (error) {
-        console.error('Error fetching employee data:', error)
+        console.error('Error fetching employees:', error)
+      } finally {
+        this.loading = false
+      }
+    },
+
+    handleNikSelection(employee) {
+      if (employee) {
+        this.request.nama = employee.nama_karyawan
+        this.request.departemen = employee.departemen.nama_departemen
+        this.request.nik = employee.NIK
+      } else {
+        this.request.nama = ''
+        this.request.departemen = ''
+        this.request.nik = ''
       }
     },
 

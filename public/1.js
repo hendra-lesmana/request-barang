@@ -34,6 +34,9 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       }, function (_, i) {
         return i.toString().padStart(2, '0');
       }),
+      loading: false,
+      search: null,
+      employees: [],
       request: {
         nik: '',
         nama: '',
@@ -49,37 +52,55 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       return "".concat(this.request.tanggal, " ").concat(this.selectedHour, ":").concat(this.selectedMinute);
     }
   },
+  created: function created() {
+    this.fetchEmployees();
+  },
   methods: {
     updateDateTime: function updateDateTime() {
       // Method to handle time updates
       console.log('DateTime updated:', this.formattedDateTime);
     },
-    fetchEmployeeData: function fetchEmployeeData() {
+    fetchEmployees: function fetchEmployees() {
       var _this = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
         var response;
         return _regeneratorRuntime().wrap(function _callee$(_context) {
           while (1) switch (_context.prev = _context.next) {
             case 0:
-              _context.prev = 0;
-              _context.next = 3;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get("/api/employees/".concat(_this.request.nik));
-            case 3:
+              _this.loading = true;
+              _context.prev = 1;
+              _context.next = 4;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default.a.get('/api/employees');
+            case 4:
               response = _context.sent;
-              _this.request.nama = response.data.nama_karyawan;
-              _this.request.departemen = response.data.departemen.nama_departemen;
+              _this.employees = response.data;
               _context.next = 11;
               break;
             case 8:
               _context.prev = 8;
-              _context.t0 = _context["catch"](0);
-              console.error('Error fetching employee data:', _context.t0);
+              _context.t0 = _context["catch"](1);
+              console.error('Error fetching employees:', _context.t0);
             case 11:
+              _context.prev = 11;
+              _this.loading = false;
+              return _context.finish(11);
+            case 14:
             case "end":
               return _context.stop();
           }
-        }, _callee, null, [[0, 8]]);
+        }, _callee, null, [[1, 8, 11, 14]]);
       }))();
+    },
+    handleNikSelection: function handleNikSelection(employee) {
+      if (employee) {
+        this.request.nama = employee.nama_karyawan;
+        this.request.departemen = employee.departemen.nama_departemen;
+        this.request.nik = employee.NIK;
+      } else {
+        this.request.nama = '';
+        this.request.departemen = '';
+        this.request.nik = '';
+      }
     },
     fetchAvailableItems: function fetchAvailableItems() {
       var _this2 = this;
@@ -411,16 +432,31 @@ var render = function render() {
       cols: "12",
       md: "4"
     }
-  }, [_c("v-text-field", {
+  }, [_c("v-autocomplete", {
     attrs: {
+      items: _vm.employees,
+      "item-text": "NIK",
+      "item-value": "NIK",
       label: "NIK Peminta",
       required: "",
       rules: [function (v) {
         return !!v || "NIK is required";
-      }]
+      }],
+      loading: _vm.loading,
+      "search-input": _vm.search,
+      "hide-no-data": "",
+      "hide-selected": "",
+      "return-object": "",
+      clearable: ""
     },
     on: {
-      input: _vm.fetchEmployeeData
+      change: _vm.handleNikSelection,
+      "update:searchInput": function updateSearchInput($event) {
+        _vm.search = $event;
+      },
+      "update:search-input": function updateSearchInput($event) {
+        _vm.search = $event;
+      }
     },
     model: {
       value: _vm.request.nik,
