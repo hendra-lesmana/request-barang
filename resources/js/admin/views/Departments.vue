@@ -100,10 +100,22 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- Snackbar for notifications -->
+    <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
+      {{ snackbar.text }}
+      <template v-slot:action="{ attrs }">
+        <v-btn text v-bind="attrs" @click="snackbar.show = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'Departments',
   data: () => ({
@@ -114,8 +126,6 @@ export default {
     headers: [
       { text: 'ID', value: 'id' },
       { text: 'Department Name', value: 'nama_departemen' },
-      { text: 'Created At', value: 'created_at' },
-      { text: 'Updated At', value: 'updated_at' },
       { text: 'Actions', value: 'actions', sortable: false }
     ],
     departments: [],
@@ -128,7 +138,12 @@ export default {
       id: null,
       nama_departemen: ''
     },
-    nameErrors: []
+    nameErrors: [],
+    snackbar: {
+      show: false,
+      text: '',
+      color: 'success'
+    }
   }),
 
   computed: {
@@ -151,26 +166,20 @@ export default {
   },
 
   methods: {
+    showNotification(text, color = 'success') {
+      this.snackbar.text = text
+      this.snackbar.color = color
+      this.snackbar.show = true
+    },
+
     async initialize () {
       this.loading = true
       try {
-        // TODO: Replace with actual API call
-        this.departments = [
-          {
-            id: 1,
-            nama_departemen: 'Information Technology',
-            created_at: '2024-01-09 10:00:00',
-            updated_at: '2024-01-09 10:00:00'
-          },
-          {
-            id: 2,
-            nama_departemen: 'Human Resources',
-            created_at: '2024-01-09 10:00:00',
-            updated_at: '2024-01-09 10:00:00'
-          }
-        ]
+        const response = await axios.get('/api/departments')
+        this.departments = response.data.data
       } catch (error) {
         console.error('Error fetching departments:', error)
+        this.showNotification('Error loading departments', 'error')
       } finally {
         this.loading = false
       }
@@ -190,10 +199,12 @@ export default {
 
     async deleteItemConfirm () {
       try {
-        // TODO: Implement API call to delete department
+        await axios.delete(`/api/departments/${this.editedItem.id}`)
         this.departments.splice(this.editedIndex, 1)
+        this.showNotification('Department deleted successfully')
       } catch (error) {
         console.error('Error deleting department:', error)
+        this.showNotification('Error deleting department', 'error')
       } finally {
         this.closeDelete()
       }
@@ -223,20 +234,25 @@ export default {
       }
 
       try {
-        // TODO: Implement API call to save department
         if (this.editedIndex > -1) {
-          Object.assign(this.departments[this.editedIndex], this.editedItem)
-        } else {
-          this.departments.push({
-            ...this.editedItem,
-            id: this.departments.length + 1,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+          // Update existing department
+          const response = await axios.put(`/api/departments/${this.editedItem.id}`, {
+            nama_departemen: this.editedItem.nama_departemen
           })
+          Object.assign(this.departments[this.editedIndex], response.data.data)
+          this.showNotification('Department updated successfully')
+        } else {
+          // Create new department
+          const response = await axios.post('/api/departments', {
+            nama_departemen: this.editedItem.nama_departemen
+          })
+          this.departments.push(response.data.data)
+          this.showNotification('Department created successfully')
         }
         this.close()
       } catch (error) {
         console.error('Error saving department:', error)
+        this.showNotification('Error saving department', 'error')
       }
     }
   }
