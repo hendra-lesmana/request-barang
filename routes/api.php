@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\BarangController;
 use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\ItemController;
@@ -19,4 +20,10 @@ Route::middleware('api')->group(function () {
 
     // Item routes
     Route::get('/items', [ItemController::class, 'index']);
+
+    // Barang routes
+    Route::get('/barang', [BarangController::class, 'index']);
+    Route::post('/barang', [BarangController::class, 'store']);
+    Route::put('/barang/{id}', [BarangController::class, 'update']);
+    Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
 });

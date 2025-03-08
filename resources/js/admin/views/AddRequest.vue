@@ -273,7 +273,7 @@ export default {
         barang: null,
         lokasi: '',
         tersedia: 0,
-        kuantiti: 1,
+        kuantiti: 0,
         satuan: '',
         keterangan: '',
         status: ''

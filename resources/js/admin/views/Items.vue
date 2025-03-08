@@ -28,12 +28,20 @@
         :loading="loading"
         class="elevation-1"
       >
-        <template v-slot:item.stock="{ item }">
+        <template v-slot:item.jumlah_stok="{ item }">
           <v-chip
-            :color="getStockColor(item.stock)"
+            :color="getStockColor(item.jumlah_stok)"
             dark
           >
-            {{ item.stock }}
+            {{ item.jumlah_stok }}
+          </v-chip>
+        </template>
+        <template v-slot:item.status="{ item }">
+          <v-chip
+            :color="item.status === 'active' ? 'green' : 'grey'"
+            dark
+          >
+            {{ item.status }}
           </v-chip>
         </template>
         <template v-slot:item.actions="{ item }">
@@ -74,7 +82,14 @@
               </v-col>
               <v-col cols="12">
                 <v-text-field
-                  v-model.number="editedItem.stock"
+                  v-model="editedItem.satuan"
+                  label="Unit"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-model.number="editedItem.jumlah_stok"
                   label="Stock"
                   type="number"
                   required
@@ -82,20 +97,13 @@
               </v-col>
               <v-col cols="12">
                 <v-select
-                  v-model="editedItem.lokasi_id"
+                  v-model="editedItem.id_lokasi"
                   :items="locations"
                   item-text="nama_lokasi"
                   item-value="id"
                   label="Location"
                   required
                 ></v-select>
-              </v-col>
-              <v-col cols="12">
-                <v-textarea
-                  v-model="editedItem.deskripsi"
-                  label="Description"
-                  rows="3"
-                ></v-textarea>
               </v-col>
             </v-row>
           </v-container>
@@ -146,9 +154,10 @@ export default {
     search: '',
     headers: [
       { text: 'Item Name', value: 'nama_barang' },
-      { text: 'Description', value: 'deskripsi' },
-      { text: 'Location', value: 'location.nama_lokasi' },
-      { text: 'Stock', value: 'stock' },
+      { text: 'Unit', value: 'satuan' },
+      { text: 'Location', value: 'lokasi.nama_lokasi' },
+      { text: 'Stock', value: 'jumlah_stok' },
+      { text: 'Status', value: 'status' },
       { text: 'Actions', value: 'actions', sortable: false }
     ],
     items: [],
@@ -157,16 +166,18 @@ export default {
     editedItem: {
       id: null,
       nama_barang: '',
-      deskripsi: '',
-      lokasi_id: null,
-      stock: 0
+      satuan: '',
+      id_lokasi: null,
+      jumlah_stok: 0,
+      status: 'active'
     },
     defaultItem: {
       id: null,
       nama_barang: '',
-      deskripsi: '',
-      lokasi_id: null,
-      stock: 0
+      satuan: '',
+      id_lokasi: null,
+      jumlah_stok: 0,
+      status: 'active'
     },
     nameErrors: []
   }),
@@ -189,77 +200,45 @@ export default {
   created () {
     this.initialize()
   },
-
   methods: {
+    getStockColor(stock) {
+      if (stock <= 10) return 'red'
+      if (stock <= 20) return 'orange'
+      return 'green'
+    },
     async initialize () {
       this.loading = true
       try {
-        // TODO: Replace with actual API calls
-        // Fetch items
-        this.items = [
-          {
-            id: 1,
-            nama_barang: 'Laptop',
-            deskripsi: 'Work laptop',
-            location: { nama_lokasi: 'Office 1' },
-            stock: 10
-          }
-        ]
-        // Fetch locations
-        this.locations = [
-          { id: 1, nama_lokasi: 'Office 1' },
-          { id: 2, nama_lokasi: 'Warehouse' }
-        ]
+        const response = await fetch('/api/barang')
+        if (!response.ok) throw new Error('Failed to fetch items')
+        const result = await response.json()
+        this.items = result.data
+        // Extract unique locations from items data
+        this.locations = [...new Set(this.items.map(item => item.lokasi))]
+          .filter(location => location) // Filter out any null/undefined locations
+          .sort((a, b) => a.nama_lokasi.localeCompare(b.nama_lokasi))
       } catch (error) {
         console.error('Error fetching data:', error)
+        // TODO: Show error notification to user
       } finally {
         this.loading = false
       }
     },
 
-    getStockColor (stock) {
-      if (stock <= 0) return 'error'
-      if (stock <= 5) return 'warning'
-      return 'success'
-    },
-
-    editItem (item) {
-      this.editedIndex = this.items.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialog = true
-    },
-
-    deleteItem (item) {
-      this.editedIndex = this.items.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialogDelete = true
-    },
-
     async deleteItemConfirm () {
       try {
-        // TODO: Implement API call to delete item
+        const response = await fetch(`/api/barang/${this.editedItem.id}`, {
+          method: 'DELETE',
+        })
+        if (!response.ok) throw new Error('Failed to delete item')
         this.items.splice(this.editedIndex, 1)
+        // TODO: Show success notification
       } catch (error) {
         console.error('Error deleting item:', error)
+        // TODO: Show error notification
       } finally {
         this.closeDelete()
       }
-    },
-
-    close () {
-      this.dialog = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
-    },
-
-    closeDelete () {
-      this.dialogDelete = false
-      this.$nextTick(() => {
-        this.editedItem = Object.assign({}, this.defaultItem)
-        this.editedIndex = -1
-      })
     },
 
     async save () {
@@ -271,16 +250,51 @@ export default {
           return
         }
 
-        // TODO: Implement API call to save item
-        if (this.editedIndex > -1) {
-          Object.assign(this.items[this.editedIndex], this.editedItem)
-        } else {
-          this.items.push(this.editedItem)
+        const method = this.editedIndex === -1 ? 'POST' : 'PUT'
+        const url = this.editedIndex === -1 
+          ? '/api/barang'
+          : `/api/barang/${this.editedItem.id}`
+
+        const response = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(this.editedItem)
+        })
+
+        if (!response.ok) throw new Error('Failed to save item')
+        const result = await response.json()
+
+        if (result.success) {
+          if (this.editedIndex > -1) {
+            Object.assign(this.items[this.editedIndex], result.data)
+          } else {
+            this.items.push(result.data)
+          }
+          this.close()
         }
-        this.close()
       } catch (error) {
         console.error('Error saving item:', error)
+        // TODO: Show error notification
       }
+    },
+
+    close () {
+      this.dialog = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+        this.nameErrors = []
+      })
+    },
+
+    closeDelete () {
+      this.dialogDelete = false
+      this.$nextTick(() => {
+        this.editedItem = Object.assign({}, this.defaultItem)
+        this.editedIndex = -1
+      })
     }
   }
 }

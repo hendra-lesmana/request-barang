@@ -164,7 +164,7 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
         barang: null,
         lokasi: '',
         tersedia: 0,
-        kuantiti: 1,
+        kuantiti: 0,
         satuan: '',
         keterangan: '',
         status: ''
