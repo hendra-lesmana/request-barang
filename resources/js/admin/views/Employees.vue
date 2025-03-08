@@ -120,6 +120,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'Employees',
   data: () => ({
@@ -130,9 +132,7 @@ export default {
     headers: [
       { text: 'NIK', value: 'NIK' },
       { text: 'Name', value: 'nama_karyawan' },
-      { text: 'Department', value: 'department.nama_departemen' },
-      { text: 'Created At', value: 'created_at' },
-      { text: 'Updated At', value: 'updated_at' },
+      { text: 'Department', value: 'departemen.nama_departemen' },
       { text: 'Actions', value: 'actions', sortable: false }
     ],
     employees: [],
@@ -175,33 +175,53 @@ export default {
     async initialize () {
       this.loading = true
       try {
-        // TODO: Replace with actual API calls
-        this.departments = [
-          { id: 1, nama_departemen: 'Information Technology' },
-          { id: 2, nama_departemen: 'Human Resources' },
-          { id: 3, nama_departemen: 'Finance' }
-        ]
+        const [employeesResponse, departmentsResponse] = await Promise.all([
+          axios.get('/api/employees'),
+          axios.get('/api/departments')
+        ])
 
-        this.employees = [
-          {
-            id: 1,
-            NIK: 'EMP001',
-            nama_karyawan: 'John Doe',
-            department: { id: 1, nama_departemen: 'Information Technology' },
-            created_at: '2024-01-09 10:00:00',
-            updated_at: '2024-01-09 10:00:00'
-          },
-          {
-            id: 2,
-            NIK: 'EMP002',
-            nama_karyawan: 'Jane Smith',
-            department: { id: 2, nama_departemen: 'Human Resources' },
-            created_at: '2024-01-09 10:00:00',
-            updated_at: '2024-01-09 10:00:00'
-          }
-        ]
+        // First handle departments data
+        if (!departmentsResponse.data) {
+          throw new Error('Departments data is missing')
+        }
+        const departmentsData = Array.isArray(departmentsResponse.data)
+          ? departmentsResponse.data
+          : departmentsResponse.data.data || []
+        if (!departmentsData.length) {
+          console.warn('No departments found')
+        }
+        this.departments = departmentsData
+
+        // Then handle employees data
+        if (!employeesResponse.data) {
+          throw new Error('Employees data is missing')
+        }
+        const employeesData = Array.isArray(employeesResponse.data)
+          ? employeesResponse.data
+          : employeesResponse.data.data || []
+        if (!employeesData.length) {
+          console.warn('No employees found')
+        }
+
+        // Map employees with their departments
+        this.employees = employeesData
+          .filter(employee => employee && employee.id) // Ensure valid employee objects
+          .map(employee => {
+            const department = this.departments.find(dept => dept.id === employee.id_departemen)
+            return {
+              ...employee,
+              departemen: department || { 
+                id: employee.id_departemen, 
+                nama_departemen: employee.departemen.nama_departemen || 'Unknown'
+              }
+            }
+          })
       } catch (error) {
         console.error('Error fetching data:', error)
+        this.$store.dispatch('showSnackbar', {
+          color: 'error',
+          text: 'Failed to fetch data: ' + (error.message || 'Unknown error')
+        })
       } finally {
         this.loading = false
       }
@@ -210,7 +230,7 @@ export default {
     editItem (item) {
       this.editedIndex = this.employees.indexOf(item)
       this.editedItem = Object.assign({}, item)
-      this.editedItem.id_departemen = item.department.id
+      this.editedItem.id_departemen = item.departemen.id
       this.dialog = true
     },
 
@@ -222,10 +242,18 @@ export default {
 
     async deleteItemConfirm () {
       try {
-        // TODO: Implement API call to delete employee
+        await axios.delete(`/api/employees/${this.editedItem.id}`)
         this.employees.splice(this.editedIndex, 1)
+        this.$store.dispatch('showSnackbar', {
+          color: 'success',
+          text: 'Employee deleted successfully'
+        })
       } catch (error) {
         console.error('Error deleting employee:', error)
+        this.$store.dispatch('showSnackbar', {
+          color: 'error',
+          text: 'Failed to delete employee'
+        })
       } finally {
         this.closeDelete()
       }
@@ -249,30 +277,40 @@ export default {
 
     async save () {
       if (!this.editedItem.NIK || !this.editedItem.nama_karyawan || !this.editedItem.id_departemen) {
+        this.$store.dispatch('showSnackbar', {
+          color: 'error',
+          text: 'Please fill in all required fields'
+        })
         return
       }
 
       try {
-        // TODO: Implement API call to save employee
-        const department = this.departments.find(d => d.id === this.editedItem.id_departemen)
-        
-        if (this.editedIndex > -1) {
-          Object.assign(this.employees[this.editedIndex], {
-            ...this.editedItem,
-            department: department
-          })
-        } else {
-          this.employees.push({
-            ...this.editedItem,
-            id: this.employees.length + 1,
-            department: department,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
+        const payload = {
+          NIK: this.editedItem.NIK,
+          nama_karyawan: this.editedItem.nama_karyawan,
+          id_departemen: this.editedItem.id_departemen
         }
+
+        let response
+        if (this.editedIndex > -1) {
+          response = await axios.put(`/api/employees/${this.editedItem.id}`, payload)
+          Object.assign(this.employees[this.editedIndex], response.data.data)
+        } else {
+          response = await axios.post('/api/employees', payload)
+          this.employees.push(response.data.data)
+        }
+
+        this.$store.dispatch('showSnackbar', {
+          color: 'success',
+          text: `Employee ${this.editedIndex === -1 ? 'created' : 'updated'} successfully`
+        })
         this.close()
       } catch (error) {
         console.error('Error saving employee:', error)
+        this.$store.dispatch('showSnackbar', {
+          color: 'error',
+          text: `Failed to ${this.editedIndex === -1 ? 'create' : 'update'} employee`
+        })
       }
     }
   }

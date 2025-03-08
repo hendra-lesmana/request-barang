@@ -65010,16 +65010,16 @@ var Departments = function Departments() {
   return __webpack_require__.e(/*! import() */ 3).then(__webpack_require__.bind(null, /*! ./views/Departments.vue */ "./resources/js/admin/views/Departments.vue"));
 };
 var Employees = function Employees() {
-  return __webpack_require__.e(/*! import() */ 4).then(__webpack_require__.bind(null, /*! ./views/Employees.vue */ "./resources/js/admin/views/Employees.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(4), __webpack_require__.e(0)]).then(__webpack_require__.bind(null, /*! ./views/Employees.vue */ "./resources/js/admin/views/Employees.vue"));
 };
 var Locations = function Locations() {
-  return Promise.all(/*! import() */[__webpack_require__.e(6), __webpack_require__.e(7)]).then(__webpack_require__.bind(null, /*! ./views/Locations.vue */ "./resources/js/admin/views/Locations.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(4), __webpack_require__.e(7)]).then(__webpack_require__.bind(null, /*! ./views/Locations.vue */ "./resources/js/admin/views/Locations.vue"));
 };
 var Items = function Items() {
   return __webpack_require__.e(/*! import() */ 5).then(__webpack_require__.bind(null, /*! ./views/Items.vue */ "./resources/js/admin/views/Items.vue"));
 };
 var Requests = function Requests() {
-  return Promise.all(/*! import() */[__webpack_require__.e(6), __webpack_require__.e(1)]).then(__webpack_require__.bind(null, /*! ./views/Requests.vue */ "./resources/js/admin/views/Requests.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(4), __webpack_require__.e(1)]).then(__webpack_require__.bind(null, /*! ./views/Requests.vue */ "./resources/js/admin/views/Requests.vue"));
 };
 
 // Configure routes
