@@ -448,22 +448,28 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     handleAddRequest: function handleAddRequest(requestData) {
       var _this4 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+        var _error$response;
         return _regeneratorRuntime().wrap(function _callee3$(_context3) {
           while (1) switch (_context3.prev = _context3.next) {
             case 0:
               _context3.prev = 0;
-              // TODO: Implement API call to create request
-              console.log('New request data:', requestData);
-              _this4.addDialog = false;
-              _context3.next = 5;
+              _context3.next = 3;
               return _this4.initialize();
-            case 5:
+            case 3:
+              _this4.addDialog = false;
+              _this4.$store.dispatch('showSnackbar', {
+                text: 'Request created successfully',
+                color: 'success'
+              });
               _context3.next = 10;
               break;
             case 7:
               _context3.prev = 7;
               _context3.t0 = _context3["catch"](0);
-              console.error('Error creating request:', _context3.t0);
+              _this4.$store.dispatch('showSnackbar', {
+                text: ((_error$response = _context3.t0.response) === null || _error$response === void 0 || (_error$response = _error$response.data) === null || _error$response === void 0 ? void 0 : _error$response.message) || 'Error creating request',
+                color: 'error'
+              });
             case 10:
             case "end":
               return _context3.stop();
@@ -795,6 +801,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
 var render = function render() {
+  var _vm$selectedRequest;
   var _vm = this,
     _c = _vm._self._c;
   return _c("div", [_c("v-card", [_c("v-card-title", [_vm._v("\n      Requests\n      "), _c("v-spacer"), _vm._v(" "), _c("v-text-field", {
@@ -868,7 +875,40 @@ var render = function render() {
         }, [_vm._v("\n          mdi-pencil\n        ")])];
       }
     }])
-  })], 1), _vm._v(" "), _c("v-dialog", {
+  })], 1), _vm._v(" "), _c("v-snackbar", {
+    attrs: {
+      color: _vm.$store.state.snackbar.color,
+      top: "",
+      right: ""
+    },
+    scopedSlots: _vm._u([{
+      key: "action",
+      fn: function fn(_ref3) {
+        var attrs = _ref3.attrs;
+        return [_c("v-btn", _vm._b({
+          attrs: {
+            text: ""
+          },
+          on: {
+            click: function click($event) {
+              return _vm.$store.commit("SET_SNACKBAR", {
+                show: false,
+                text: "",
+                color: ""
+              });
+            }
+          }
+        }, "v-btn", attrs, false), [_vm._v("\n        Close\n      ")])];
+      }
+    }]),
+    model: {
+      value: _vm.$store.state.snackbar.show,
+      callback: function callback($$v) {
+        _vm.$set(_vm.$store.state.snackbar, "show", $$v);
+      },
+      expression: "$store.state.snackbar.show"
+    }
+  }, [_vm._v("\n    " + _vm._s(_vm.$store.state.snackbar.text) + "\n    ")]), _vm._v(" "), _c("v-dialog", {
     attrs: {
       "max-width": "700px"
     },
@@ -893,9 +933,9 @@ var render = function render() {
     }
   }, [_c("strong", [_vm._v("Status:")]), _vm._v(" "), _c("v-chip", {
     attrs: {
-      color: _vm.getStatusColor(_vm.selectedRequest.status),
-      dark: "",
-      small: ""
+      color: _vm.getStatusColor((_vm$selectedRequest = _vm.selectedRequest) === null || _vm$selectedRequest === void 0 ? void 0 : _vm$selectedRequest.status),
+      dark: true,
+      small: true
     }
   }, [_vm._v("\n                " + _vm._s(_vm.selectedRequest.status) + "\n              ")])], 1), _vm._v(" "), _c("v-col", {
     attrs: {

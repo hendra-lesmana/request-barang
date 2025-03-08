@@ -55,6 +55,25 @@
       </v-data-table>
     </v-card>
 
+    <!-- Snackbar Component -->
+    <v-snackbar
+      v-model="$store.state.snackbar.show"
+      :color="$store.state.snackbar.color"
+      top
+      right
+    >
+      {{ $store.state.snackbar.text }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          text
+          v-bind="attrs"
+          @click="$store.commit('SET_SNACKBAR', { show: false, text: '', color: '' })"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+
     <!-- Request Details Dialog -->
     <v-dialog v-model="detailsDialog" max-width="700px">
       <v-card>
@@ -71,9 +90,9 @@
               <v-col cols="12" md="6">
                 <strong>Status:</strong>
                 <v-chip
-                  :color="getStatusColor(selectedRequest.status)"
-                  dark
-                  small
+                  :color="getStatusColor(selectedRequest?.status)"
+                  :dark="true"
+                  :small="true"
                 >
                   {{ selectedRequest.status }}
                 </v-chip>
@@ -341,12 +360,17 @@ export default {
 
     async handleAddRequest(requestData) {
       try {
-        // TODO: Implement API call to create request
-        console.log('New request data:', requestData)
-        this.addDialog = false
         await this.initialize()
+        this.addDialog = false
+        this.$store.dispatch('showSnackbar', {
+          text: 'Request created successfully',
+          color: 'success'
+        })
       } catch (error) {
-        console.error('Error creating request:', error)
+        this.$store.dispatch('showSnackbar', {
+          text: error.response?.data?.message || 'Error creating request',
+          color: 'error'
+        })
       }
     }
   }
