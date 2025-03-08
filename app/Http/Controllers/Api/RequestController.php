@@ -23,7 +23,7 @@ class RequestController extends Controller
                     'nik' => $request->karyawan->NIK,
                     'nama' => $request->karyawan->nama_karyawan,
                     'departemen' => $request->karyawan->departemen->nama_departemen,
-                    'tanggal' => $request->created_at,
+                    'tanggal' => $request->created_at->format('Y-m-d H:i'),
                     'status' => $request->status,
                     'items' => $request->detailPermintaanBarang->map(function ($detail) {
                         return [
