@@ -56,6 +56,14 @@ class RequestController extends Controller
 
             $karyawan = Karyawan::where('NIK', $request->nik)->firstOrFail();
 
+            // Validate stock availability for all items
+            foreach ($request->items as $item) {
+                $barang = Barang::findOrFail($item['barang']);
+                if ($barang->jumlah_stok < $item['kuantiti']) {
+                    throw new \Exception("Insufficient stock for item: {$barang->nama_barang}");
+                }
+            }
+
             $permintaan = PermintaanBarang::create([
                 'id_karyawan' => $karyawan->id,
                 'nama_permintaan_barang' => 'REQ-' . date('Ymd', strtotime($request->tanggal)) . '-' . $karyawan->NIK . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT),
@@ -66,6 +74,7 @@ class RequestController extends Controller
             foreach ($request->items as $item) {
                 $barang = Barang::with('lokasi')->findOrFail($item['barang']);
 
+                // Create detail request
                 DetailPermintaanBarang::create([
                     'id_permintaan_barang' => $permintaan->id,
                     'id_barang' => $barang->id,
@@ -74,8 +83,12 @@ class RequestController extends Controller
                     'nama_lokasi' => $barang->lokasi->nama_lokasi,
                     'kuantiti' => $item['kuantiti'],
                     'keterangan' => $item['keterangan'] ?? null,
-                    'status' => $barang->jumlah_stok >= $item['kuantiti'] ? 'Terpenuhi' : 'Tidak Tersedia'
+                    'status' => 'Terpenuhi'
                 ]);
+
+                // Reduce stock
+                $barang->jumlah_stok -= $item['kuantiti'];
+                $barang->save();
             }
 
             DB::commit();
