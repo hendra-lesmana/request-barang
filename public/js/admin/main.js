@@ -65013,13 +65013,13 @@ var Employees = function Employees() {
   return __webpack_require__.e(/*! import() */ 4).then(__webpack_require__.bind(null, /*! ./views/Employees.vue */ "./resources/js/admin/views/Employees.vue"));
 };
 var Locations = function Locations() {
-  return __webpack_require__.e(/*! import() */ 6).then(__webpack_require__.bind(null, /*! ./views/Locations.vue */ "./resources/js/admin/views/Locations.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(6), __webpack_require__.e(7)]).then(__webpack_require__.bind(null, /*! ./views/Locations.vue */ "./resources/js/admin/views/Locations.vue"));
 };
 var Items = function Items() {
   return __webpack_require__.e(/*! import() */ 5).then(__webpack_require__.bind(null, /*! ./views/Items.vue */ "./resources/js/admin/views/Items.vue"));
 };
 var Requests = function Requests() {
-  return Promise.all(/*! import() */[__webpack_require__.e(0), __webpack_require__.e(1)]).then(__webpack_require__.bind(null, /*! ./views/Requests.vue */ "./resources/js/admin/views/Requests.vue"));
+  return Promise.all(/*! import() */[__webpack_require__.e(6), __webpack_require__.e(1)]).then(__webpack_require__.bind(null, /*! ./views/Requests.vue */ "./resources/js/admin/views/Requests.vue"));
 };
 
 // Configure routes

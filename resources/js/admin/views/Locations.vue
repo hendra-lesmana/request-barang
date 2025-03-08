@@ -100,10 +100,29 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <!-- Snackbar for notifications -->
+    <v-snackbar
+      v-model="snackbar.show"
+      :color="snackbar.color"
+      :timeout="3000"
+    >
+      {{ snackbar.text }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          text
+          v-bind="attrs"
+          @click="snackbar.show = false"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'Locations',
   data: () => ({
@@ -114,8 +133,7 @@ export default {
     headers: [
       { text: 'ID', value: 'id' },
       { text: 'Location Name', value: 'nama_lokasi' },
-      { text: 'Created At', value: 'created_at' },
-      { text: 'Updated At', value: 'updated_at' },
+
       { text: 'Actions', value: 'actions', sortable: false }
     ],
     locations: [],
@@ -128,7 +146,12 @@ export default {
       id: null,
       nama_lokasi: ''
     },
-    nameErrors: []
+    nameErrors: [],
+    snackbar: {
+      show: false,
+      text: '',
+      color: 'success'
+    }
   }),
 
   computed: {
@@ -151,26 +174,20 @@ export default {
   },
 
   methods: {
+    showNotification(text, color = 'success') {
+      this.snackbar.text = text
+      this.snackbar.color = color
+      this.snackbar.show = true
+    },
+
     async initialize () {
       this.loading = true
       try {
-        // TODO: Replace with actual API call
-        this.locations = [
-          {
-            id: 1,
-            nama_lokasi: 'IT Storage',
-            created_at: '2024-01-09 10:00:00',
-            updated_at: '2024-01-09 10:00:00'
-          },
-          {
-            id: 2,
-            nama_lokasi: 'Office Supply Room',
-            created_at: '2024-01-09 10:00:00',
-            updated_at: '2024-01-09 10:00:00'
-          }
-        ]
+        const response = await axios.get('/api/locations')
+        this.locations = response.data.data
       } catch (error) {
         console.error('Error fetching locations:', error)
+        this.showNotification('Error loading locations', 'error')
       } finally {
         this.loading = false
       }
@@ -190,10 +207,12 @@ export default {
 
     async deleteItemConfirm () {
       try {
-        // TODO: Implement API call to delete location
+        await axios.delete(`/api/locations/${this.editedItem.id}`)
         this.locations.splice(this.editedIndex, 1)
+        this.showNotification('Location deleted successfully')
       } catch (error) {
         console.error('Error deleting location:', error)
+        this.showNotification('Error deleting location', 'error')
       } finally {
         this.closeDelete()
       }
@@ -223,20 +242,21 @@ export default {
       }
 
       try {
-        // TODO: Implement API call to save location
         if (this.editedIndex > -1) {
-          Object.assign(this.locations[this.editedIndex], this.editedItem)
+          // Update existing location
+          const response = await axios.put(`/api/locations/${this.editedItem.id}`, this.editedItem)
+          Object.assign(this.locations[this.editedIndex], response.data)
+          this.showNotification('Location updated successfully')
         } else {
-          this.locations.push({
-            ...this.editedItem,
-            id: this.locations.length + 1,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
+          // Create new location
+          const response = await axios.post('/api/locations', this.editedItem)
+          this.locations.push(response.data)
+          this.showNotification('Location created successfully')
         }
         this.close()
       } catch (error) {
         console.error('Error saving location:', error)
+        this.showNotification('Error saving location', 'error')
       }
     }
   }

@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\BarangController;
 use App\Http\Controllers\Api\RequestController;
 use App\Http\Controllers\Api\EmployeeController;
 use App\Http\Controllers\Api\ItemController;
+use App\Http\Controllers\Api\LocationController;
 
 Route::middleware('api')->group(function () {
     // Request routes
@@ -26,4 +27,10 @@ Route::middleware('api')->group(function () {
     Route::post('/barang', [BarangController::class, 'store']);
     Route::put('/barang/{id}', [BarangController::class, 'update']);
     Route::delete('/barang/{id}', [BarangController::class, 'destroy']);
+
+    // Location routes
+    Route::get('/locations', [LocationController::class, 'index']);
+    Route::post('/locations', [LocationController::class, 'store']);
+    Route::put('/locations/{id}', [LocationController::class, 'update']);
+    Route::delete('/locations/{id}', [LocationController::class, 'destroy']);
 });
