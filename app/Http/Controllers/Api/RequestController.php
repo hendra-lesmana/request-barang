@@ -58,6 +58,7 @@ class RequestController extends Controller
 
             $permintaan = PermintaanBarang::create([
                 'id_karyawan' => $karyawan->id,
+                'nama_permintaan_barang' => 'REQ-' . date('Ymd', strtotime($request->tanggal)) . '-' . $karyawan->NIK . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT),
                 'status' => 'Pending',
                 'created_at' => $request->tanggal
             ]);
@@ -73,7 +74,7 @@ class RequestController extends Controller
                     'nama_lokasi' => $barang->lokasi->nama_lokasi,
                     'kuantiti' => $item['kuantiti'],
                     'keterangan' => $item['keterangan'] ?? null,
-                    'status' => $barang->jumlah_stok >= $item['kuantiti'] ? 'Tersedia' : 'Tidak Tersedia'
+                    'status' => $barang->jumlah_stok >= $item['kuantiti'] ? 'Terpenuhi' : 'Tidak Tersedia'
                 ]);
             }
 

@@ -48,8 +48,14 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
     };
   },
   computed: {
-    formattedDateTime: function formattedDateTime() {
-      return "".concat(this.request.tanggal, " ").concat(this.selectedHour, ":").concat(this.selectedMinute);
+    formattedDateTime: {
+      get: function get() {
+        return "".concat(this.request.tanggal, " ").concat(this.selectedHour, ":").concat(this.selectedMinute);
+      },
+      set: function set(value) {
+        // Handle any updates to the formatted datetime if needed
+        console.log('DateTime value updated:', value);
+      }
     }
   },
   created: function created() {
@@ -168,34 +174,64 @@ function _asyncToGenerator(n) { return function () { var t = this, e = arguments
       this.request.items.splice(index, 1);
     },
     cancel: function cancel() {
-      this.$router.push('/admin/requests');
+      this.$refs.form.reset();
+      this.request = {
+        nik: '',
+        nama: '',
+        departemen: '',
+        tanggal: new Date().toISOString().substr(0, 10),
+        items: []
+      };
+      this.$router.push('/admin/requests')["catch"](function () {});
     },
     submit: function submit() {
       var _this4 = this;
       return _asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee4() {
+        var formattedRequest, _error$response;
         return _regeneratorRuntime().wrap(function _callee4$(_context4) {
           while (1) switch (_context4.prev = _context4.next) {
             case 0:
               if (!_this4.$refs.form.validate()) {
-                _context4.next = 10;
+                _context4.next = 14;
                 break;
               }
               _context4.prev = 1;
-              _context4.next = 4;
-              return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('/api/requests', _this4.request);
-            case 4:
-              _this4.$router.push('/admin/requests');
-              _context4.next = 10;
-              break;
+              formattedRequest = {
+                nik: _this4.request.nik,
+                tanggal: "".concat(_this4.request.tanggal, " ").concat(_this4.selectedHour, ":").concat(_this4.selectedMinute, ":00"),
+                items: _this4.request.items.map(function (item) {
+                  return {
+                    barang: item.barang,
+                    kuantiti: item.kuantiti,
+                    keterangan: item.keterangan || null
+                  };
+                })
+              };
+              _context4.next = 5;
+              return axios__WEBPACK_IMPORTED_MODULE_0___default.a.post('/api/requests', formattedRequest);
+            case 5:
+              _context4.next = 7;
+              return _this4.$router.push('/admin/requests')["catch"](function () {});
             case 7:
-              _context4.prev = 7;
+              _this4.$store.dispatch('showSnackbar', {
+                text: 'Request created successfully',
+                color: 'success'
+              });
+              _context4.next = 14;
+              break;
+            case 10:
+              _context4.prev = 10;
               _context4.t0 = _context4["catch"](1);
               console.error('Error submitting request:', _context4.t0);
-            case 10:
+              _this4.$store.dispatch('showSnackbar', {
+                text: ((_error$response = _context4.t0.response) === null || _error$response === void 0 || (_error$response = _error$response.data) === null || _error$response === void 0 ? void 0 : _error$response.message) || 'Error creating request',
+                color: 'error'
+              });
+            case 14:
             case "end":
               return _context4.stop();
           }
-        }, _callee4, null, [[1, 7]]);
+        }, _callee4, null, [[1, 10]]);
       }))();
     }
   }

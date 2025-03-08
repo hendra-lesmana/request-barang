@@ -207,8 +207,14 @@ export default {
   }),
 
   computed: {
-    formattedDateTime() {
-      return `${this.request.tanggal} ${this.selectedHour}:${this.selectedMinute}`
+    formattedDateTime: {
+      get() {
+        return `${this.request.tanggal} ${this.selectedHour}:${this.selectedMinute}`
+      },
+      set(value) {
+        // Handle any updates to the formatted datetime if needed
+        console.log('DateTime value updated:', value)
+      }
     }
   },
   created() {
@@ -279,19 +285,45 @@ export default {
     },
 
     cancel() {
-      this.$router.push('/admin/requests')
+      this.$refs.form.reset()
+      this.request = {
+        nik: '',
+        nama: '',
+        departemen: '',
+        tanggal: new Date().toISOString().substr(0, 10),
+        items: []
+      }
+      this.$router.push('/admin/requests').catch(() => {})
     },
 
     async submit() {
       if (this.$refs.form.validate()) {
         try {
-          await axios.post('/api/requests', this.request)
-          this.$router.push('/admin/requests')
+          const formattedRequest = {
+            nik: this.request.nik,
+            tanggal: `${this.request.tanggal} ${this.selectedHour}:${this.selectedMinute}:00`,
+            items: this.request.items.map(item => ({
+              barang: item.barang,
+              kuantiti: item.kuantiti,
+              keterangan: item.keterangan || null
+            }))
+          }
+
+          await axios.post('/api/requests', formattedRequest)
+          await this.$router.push('/admin/requests').catch(() => {})
+          this.$store.dispatch('showSnackbar', {
+            text: 'Request created successfully',
+            color: 'success'
+          })
         } catch (error) {
           console.error('Error submitting request:', error)
+          this.$store.dispatch('showSnackbar', {
+            text: error.response?.data?.message || 'Error creating request',
+            color: 'error'
+          })
         }
       }
-    }
+    },
   }
 }
 </script>
