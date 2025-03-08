@@ -133,7 +133,10 @@
                         v-model.number="item.kuantiti"
                         type="number"
                         min="1"
-                        :rules="[v => v <= item.tersedia || 'Exceeds available quantity']"
+                        :rules="[
+                          v => v <= item.tersedia || 'Exceeds available quantity',
+                          v => v > 0 || 'Quantity has to more than 0'
+                        ]"
                       ></v-text-field>
                     </td>
                     <td>{{ item.satuan }}</td>

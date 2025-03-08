@@ -749,6 +749,8 @@ var render = function render() {
               min: "1",
               rules: [function (v) {
                 return v <= item.tersedia || "Exceeds available quantity";
+              }, function (v) {
+                return v > 0 || "Quantity has to more than 0";
               }]
             },
             model: {
