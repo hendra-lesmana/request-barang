@@ -20,6 +20,7 @@
           :key="item.title"
           :to="item.path"
           link
+          :class="{ 'v-list-item--active primary': $route.path === item.path }"
         >
           <v-list-item-icon>
             <v-icon>{{ item.icon }}</v-icon>

@@ -361,6 +361,9 @@ var render = function render() {
   }, [_vm._v("\n            Request Barang\n          ")]), _vm._v(" "), _c("v-list-item-subtitle", [_vm._v("\n            Admin Panel\n          ")])], 1)], 1), _vm._v(" "), _c("v-divider"), _vm._v(" "), _vm._l(_vm.menuItems, function (item) {
     return _c("v-list-item", {
       key: item.title,
+      "class": {
+        "v-list-item--active primary": _vm.$route.path === item.path
+      },
       attrs: {
         to: item.path,
         link: ""
