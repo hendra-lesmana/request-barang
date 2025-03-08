@@ -309,12 +309,40 @@ export default {
           }
 
           await axios.post('/api/requests', formattedRequest)
+          
+          // Update available quantities after successful submission
+          this.request.items.forEach(item => {
+            const availableItemIndex = this.availableItems.findIndex(i => i.id === item.barang)
+            if (availableItemIndex !== -1) {
+              this.availableItems[availableItemIndex] = {
+                ...this.availableItems[availableItemIndex],
+                jumlah_stok: this.availableItems[availableItemIndex].jumlah_stok - item.kuantiti
+              }
+            }
+          })
+          
           this.$emit('submit', formattedRequest)
           await this.$router.push('/admin/requests').catch(() => {})
           this.$store.dispatch('showSnackbar', {
             text: 'Request created successfully',
             color: 'success'
           })
+          this.$refs.form.reset()
+          this.request = {
+            nik: '',
+            nama: '',
+            departemen: '',
+            tanggal: new Date().toISOString().substr(0, 10),
+            items: []
+          }          
+          this.$refs.form.reset()
+          this.request = {
+            nik: '',
+            nama: '',
+            departemen: '',
+            tanggal: new Date().toISOString().substr(0, 10),
+            items: []
+          }
         } catch (error) {
           console.error('Error submitting request:', error)
           this.$store.dispatch('showSnackbar', {
