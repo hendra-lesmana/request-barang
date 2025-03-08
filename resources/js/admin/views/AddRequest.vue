@@ -293,9 +293,8 @@ export default {
         tanggal: new Date().toISOString().substr(0, 10),
         items: []
       }
-      this.$router.push('/admin/requests').catch(() => {})
+      this.$emit('cancel')
     },
-
     async submit() {
       if (this.$refs.form.validate()) {
         try {
@@ -310,6 +309,7 @@ export default {
           }
 
           await axios.post('/api/requests', formattedRequest)
+          this.$emit('submit', formattedRequest)
           await this.$router.push('/admin/requests').catch(() => {})
           this.$store.dispatch('showSnackbar', {
             text: 'Request created successfully',
